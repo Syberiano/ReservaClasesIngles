@@ -1,14 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Image,
-  TextInput,
-  ScrollView,
-  FlatList,
-} from "react-native";
+import { View, Text,  Pressable,  StyleSheet, Image, TextInput,  ScrollView, FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import LabelLevel from "../components/LabelLevel";
@@ -28,31 +19,33 @@ se instala la librería en este orden:
 
 export default function ClasesScreen({ navigation }) {
   const insets = useSafeAreaInsets();
-  const { columnas, paddingHorizontal } = useResponsive();
-  const [nivel, setNivel] = useState();
+  const { columnas, paddingHorizontal, anchoTarjeta } = useResponsive();
+  const [nivel, setNivel] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
 
   const resultados = useMemo(() => {
     const textoBusqueda = busqueda.trim().toLocaleLowerCase();
+
     return CLASES.filter((clase) => {
       const coincidenciaNivel = nivel === "Todos" || clase.nivel === nivel;
       const coincidenciaTexto =
-        textoBusqueda === "" ||
-        clase.titulo.toLocaleLowerCase().includes(textoBusqueda) ||
-        clase.profesor.nombre.toLocaleLowerCase().includes(textoBusqueda);
+        !textoBusqueda ||
+        clase.titulo?.toLocaleLowerCase().includes(textoBusqueda) ||
+        clase.profesor?.nombre?.toLocaleLowerCase().includes(textoBusqueda);
+
       return coincidenciaNivel && coincidenciaTexto;
     });
   }, [nivel, busqueda]);
 
   return (
-    <View style={[style.pantalla, { paddingTop: insets.top + spacing.md }]}>
+    <View style={[styles.pantalla, { paddingTop: insets.top + spacing.md }]}>
       <View>
-        <Text>Aplicación para clase de Inglés</Text>
+        <Text style={styles.titulo}>Aplicación para clase de Inglés</Text>
         <Ionicons name="search" size={18} color={colors.textoSuave} />
         <TextInput
-          placeholder="Buscar por nivel"
-          value={nivel}
-          onChangeText={setNivel}
+          placeholder="Buscar"
+          value={busqueda}
+          onChangeText={setBusqueda}
           autoCorrect={false}
         />
         {busqueda.length > 0 && (
@@ -64,12 +57,12 @@ export default function ClasesScreen({ navigation }) {
           />
         )}
       </View>
-      <ScrollView style={{ flexGrow: 0 }} horizontal>
+      <ScrollView styles ={{ flexGrow: 0 }} horizontal>
         {NIVELES.map((item) => (
           <NivelChip
             key={item}
             etiqueta={item}
-            activo={item}
+            activo={nivel === item}
             onPress={() => setNivel(item)}
           />
         ))}
@@ -109,19 +102,44 @@ export default function ClasesScreen({ navigation }) {
   );
 }
 
-const style = StyleSheet.create({
-  pantalla: { flex: 1, backgroundColor: colors.fondo },
-  buscador: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
+const styles = StyleSheet.create({
+  card: {
     backgroundColor: colors.superficie,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.lg,
-    height: 46,
-    marginTop: spacing.lg,
+    borderRadius: radius.lg,
+    overflow: "hidden",
     borderWidth: 1,
     borderColor: colors.borde,
+    marginBottom: spacing.md,
+    shadowColor: "#0F172A",
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
-  input: { flex: 1, fontSize: 14, color: colors.texto, paddingVertical: 0 },
+  imagen: {
+    width: "100%",
+    height: 150,
+  },
+  contenido: {
+    padding: spacing.md,
+    gap: spacing.xs,
+  },
+  titulo: {
+    ...typography.subtitulo,
+    marginTop: spacing.xs,
+  },
+  profesor: {
+    ...typography.cuerpo,
+    fontWeight: "600",
+    marginTop: spacing.sm,
+  },
+  horario: {
+    ...typography.secundario,
+    lineHeight: 18,
+  },
+  precio: {
+    ...typography.cuerpo,
+    fontWeight: "700",
+    color: colors.primario,
+  },
 });

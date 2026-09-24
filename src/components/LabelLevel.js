@@ -1,19 +1,24 @@
 import { React } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { colors, spacing } from "../theme";
+import { coloresPorNivel, colors, spacing } from "../theme";
 
 export default function LabelLevel({ nivel }) {
+
+  const fondo = coloresPorNivel[nivel] || colors.primarioSuave;
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.fondo }]}>
+    <View style={[styles.container, { backgroundColor: fondo, borderColor: fondo }]}>
       <Text style={styles.text}>{nivel}</Text>
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
+    alignSelf: "flex-start",
     paddingVertical: 3,
     paddingHorizontal: spacing.md,
     borderWidth: 1,
+    borderRadius: 999,
   },
   text: {
     fontSize: 11,
